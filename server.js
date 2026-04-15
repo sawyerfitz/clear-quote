@@ -2,6 +2,12 @@ const http = require('http');
 const https = require('https');
 
 http.createServer((req, res) => {
+http.createServer((req, res) => {
+  if (req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('ok');
+    return;
+  }
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', '*');
   res.setHeader('Access-Control-Allow-Methods', '*');
