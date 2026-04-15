@@ -26,4 +26,4 @@ http.createServer((req, res) => {
     r.write(body);
     r.end();
   });
-}).listen(3001, () => console.log('Proxy running on port 3001'));
+}).listen(process.env.PORT || 3000, () => console.log('Proxy running'));
