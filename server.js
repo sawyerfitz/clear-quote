@@ -24,6 +24,7 @@ const r = https.request({
     'x-api-key': process.env.ANTHROPIC_API_KEY,
     'anthropic-version': '2023-06-01'
   }
+const r = https.request({
 }, resp => {
   res.writeHead(resp.statusCode, { 'Content-Type': 'application/json' });
   resp.pipe(res);
