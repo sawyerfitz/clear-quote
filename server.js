@@ -31,4 +31,4 @@ const r = https.request({
 });
     r.write(body);
     r.end();
-}).listen(process.env.PORT, () => console.log("Proxy running"});
+}).listen(process.env.PORT, () => console.log("Proxy running"));
