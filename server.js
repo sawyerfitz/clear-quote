@@ -16,19 +16,19 @@ http.createServer((req, res) => {
   let body = '';
   req.on('data', d => body += d);
   req.on('end', () => {
-    const r = https.request({
-      hostname: 'api.anthropic.com',
-      path: '/v1/messages',
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY ,
-        'anthropic-version': '2023-06-01'
-      }
-    }, resp => {
-      res.writeHead(resp.statusCode, {'Content-Type': 'application/json'});
-      resp.pipe(res);
-    });
+const r = https.request({
+  hostname: 'api.anthropic.com',
+  path: '/v1/messages',
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'x-api-key': process.env.ANTHROPIC_API_KEY,
+    'anthropic-version': '2023-06-01'
+  }
+}, resp => {
+  res.writeHead(resp.statusCode, { 'Content-Type': 'application/json' });
+  resp.pipe(res);
+});
     r.write(body);
     r.end();
 }).listen(process.env.PORT, () => console.log("Proxy running"});
