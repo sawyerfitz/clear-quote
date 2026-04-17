@@ -88,5 +88,5 @@ req.on('end', () => {
 });
 
 server.listen(process.env.PORT || 3000, "0.0.0.0", () => {
-  console.log('Proxy running');
+  console.log('Proxy running on port', process.env.PORT || 3000);
 });
