@@ -32,44 +32,59 @@ const server = http.createServer((req, res) => {
     body += chunk;
   });
 
-  req.on('end', () => {
-    const proxyReq = https.request(
-      {
-        hostname: 'api.anthropic.com',
-        path: '/v1/messages',
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': process.env.ANTHROPIC_API_KEY,
-          'anthropic-version': '2023-06-01',
-          'Content-Length': Buffer.byteLength(body)
-        }
-      },
-      proxyRes => {
-        let responseBody = '';
+req.on('end', () => {
+  if (!body) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Empty body' }));
+    return;
+  }
 
-        proxyRes.on('data', chunk => {
-          responseBody += chunk;
-        });
+  let parsed;
+  try {
+    parsed = JSON.parse(body);
+  } catch (e) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Invalid JSON' }));
+    return;
+  }
 
-        proxyRes.on('end', () => {
-          res.writeHead(proxyRes.statusCode || 500, {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
-          });
-          res.end(responseBody);
-        });
+  const proxyReq = https.request(
+    {
+      hostname: 'api.anthropic.com',
+      path: '/v1/messages',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': process.env.ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01',
+        'Content-Length': Buffer.byteLength(JSON.stringify(parsed))
       }
-    );
+    },
+    proxyRes => {
+      let responseBody = '';
 
-    proxyReq.on('error', err => {
-      res.writeHead(500, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: err.message }));
-    });
+      proxyRes.on('data', chunk => {
+        responseBody += chunk;
+      });
 
-    proxyReq.write(body);
-    proxyReq.end();
+      proxyRes.on('end', () => {
+        res.writeHead(proxyRes.statusCode || 500, {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        });
+        res.end(responseBody);
+      });
+    }
+  );
+
+  proxyReq.on('error', err => {
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: err.message }));
   });
+
+  proxyReq.write(JSON.stringify(parsed));
+  proxyReq.end();
+});
 });
 
 server.listen(process.env.PORT, () => {
