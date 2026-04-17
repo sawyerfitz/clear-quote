@@ -315,7 +315,7 @@ Pricing:
 Return exactly:
 {"finalPrice":number,"rangeMin":number,"rangeMax":number,"propertyType":string,"estimatedSqft":number,"estimatedWindows":number,"floors":number,"complexity":string,"addons":[{"name":string,"price":number}],"confidence":"high"|"medium"|"low","reasoning":string,"recurringMonthly":number,"recurringQuarterly":number}`;
 
-  const res = await fetch("http://localhost:3001/v1/messages", {
+  const res = await fetch("https://clear-quote-production.up.railway.app/v1/messages", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
